@@ -19,6 +19,7 @@ LinkVault is a full-stack web application that transforms long URLs into concise
 - [Technologies](#technologies)
 - [Project Architecture](#project-architecture)
   - [Layer Structure](#layer-structure)
+  - [Dependency Rules](#dependency-rules)
   - [System Architecture](#system-architecture)
   - [Container Diagram](#container-diagram)
 - [Database Schema](#database-schema)
@@ -151,10 +152,10 @@ Following Clean Architecture principles, dependencies point inward only:
 ```
 ┌─────────────────────────────────────────────────────┐
 │  Presentation  (Blazor App, API)                    │
-│    ↓ references                                      │
-│  Application  (Services, DTOs)                       │
-│    ↓ references                                      │
-│  Domain      (Entities, Enums, Value Objects)        │
+│    ↓ references                                     │
+│  Application  (Services, DTOs)                      │
+│    ↓ references                                     │
+│  Domain      (Entities, Enums, Value Objects)       │
 └─────────────────────────────────────────────────────┘
 
 Infrastructure (EF Core, Redis, External APIs)
@@ -650,8 +651,8 @@ flowchart TB
 
 5. The Aspire dashboard will open. Wait for all resources to initialize, then navigate to the web app.
 
-   > [!NOTE]
-   > If the Aspire dashboard does not open automatically, find the link in the console output.
+> [!NOTE]
+> If the Aspire dashboard does not open automatically, find the link in the console output.
 
 6. Register a new account or log in with GitHub OAuth.
 
