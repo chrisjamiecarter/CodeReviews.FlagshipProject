@@ -10,33 +10,38 @@ LinkVault is a full-stack web application that transforms long URLs into concise
 ## Table of Contents <!-- omit in toc -->
 
 - [Overview](#overview)
-- [Requirements](#requirements)
-- [Why This Project?](#why-this-project)
+  - [Why This Project?](#why-this-project)
 - [Features](#features)
-- [Challenges](#challenges)
+  - [Core Features](#core-features)
+  - [Analytics \& Tracking](#analytics--tracking)
+  - [Security \& Performance](#security--performance)
+  - [User Management](#user-management)
 - [Technologies](#technologies)
 - [Project Architecture](#project-architecture)
   - [Layer Structure](#layer-structure)
   - [System Architecture](#system-architecture)
+  - [Container Diagram](#container-diagram)
 - [Database Schema](#database-schema)
   - [Core Entities](#core-entities)
+    - [Links](#links)
+    - [ClickEvents](#clickevents)
+    - [Users (ASP.NET Identity)](#users-aspnet-identity)
   - [ER Diagram](#er-diagram)
+  - [Caching Strategy](#caching-strategy)
+  - [Unique ID Generation](#unique-id-generation)
+  - [Encoding Strategy](#encoding-strategy)
 - [Azure Functions](#azure-functions)
   - [Link Expiration Function](#link-expiration-function)
   - [Click Analytics Aggregation Function](#click-analytics-aggregation-function)
 - [External API Integration](#external-api-integration)
   - [QR Code Generation API](#qr-code-generation-api)
-  - [Link Preview / Metadata API](#link-preview--metadata-api)
 - [Authentication Strategy](#authentication-strategy)
+  - [ASP.NET Identity with GitHub OAuth](#aspnet-identity-with-github-oauth)
 - [Load Balancing Strategy](#load-balancing-strategy)
 - [Rate Limiting Strategy](#rate-limiting-strategy)
-- [Caching Strategy](#caching-strategy)
-- [Unique ID Generation](#unique-id-generation)
-- [Encoding Strategy](#encoding-strategy)
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
   - [Running the Application](#running-the-application)
-- [Future Enhancements](#future-enhancements)
 - [Version](#version)
 - [Contributing](#contributing)
 - [License](#license)
@@ -139,18 +144,40 @@ LinkVault/
 - **LinkVault.Tests.Unit** -- Unit tests for services and business logic.
 - **LinkVault.Tests.Integration** -- Integration tests for API endpoints and database interactions.
 
+### Dependency Rules
+
+Following Clean Architecture principles, dependencies point inward only:
+
+```
+┌─────────────────────────────────────────────────────┐
+│  Presentation  (Blazor App, API)                    │
+│    ↓ references                                      │
+│  Application  (Services, DTOs)                       │
+│    ↓ references                                      │
+│  Domain      (Entities, Enums, Value Objects)        │
+└─────────────────────────────────────────────────────┘
+
+Infrastructure (EF Core, Redis, External APIs)
+    ↑ implements interfaces defined in Application
+```
+
+- **Domain** has no dependencies on other projects
+- **Application** references only Domain
+- **Infrastructure** references Application (implements its interfaces)
+- **Api/BlazorApp** references Application and Infrastructure
+
 ### System Architecture
 
 ```mermaid
 graph TB
     subgraph Client["Client Tier"]
         Browser["Browser<br/>(User)"]
-        Admin["Admin Portal<br/>(Blazor Server)"]
+        Admin["Admin<br/>(Dashboard User)"]
     end
 
     subgraph AzureEdge["Azure Edge"]
         FrontDoor["Azure Front Door<br/>(Global Load Balancer)"]
-        WAF["WAF<br/>(SQL Injection, XSS Protection)"]
+        WAF["WAF<br/>(OWASP Protection)"]
     end
 
     subgraph AzureCompute["Azure Compute"]
@@ -167,19 +194,20 @@ graph TB
 
     subgraph External["External Services"]
         Github["GitHub OAuth<br/>(Authentication)"]
-        QrApi["QR Code API<br/>(QR Generation)"]
+        QrApi["QR Code API<br/>(QRServer.com)"]
         PreviewApi["Link Preview API<br/>(Metadata Extraction)"]
     end
 
     Browser -->|"HTTPS"| FrontDoor
-    Admin -->|"HTTPS"| BlazorApp
+    Admin -->|"HTTPS"| FrontDoor
+    FrontDoor -->|"Route /s/*"| ApiApp
     FrontDoor -->|"Route /api/*"| ApiApp
     FrontDoor -->|"Route /*"| BlazorApp
     BlazorApp -->|"API Calls"| ApiApp
     ApiApp -->|"R/W"| SqlDb
     ApiApp -->|"Reads"| SqlDbReplica
     ApiApp -->|"Cache Lookups"| Redis
-    ApiApp -->|"Redirect"| Browser
+    ApiApp -->|"302 Redirect"| Browser
     ApiApp -->|"Track Clicks"| SqlDb
     FuncApp -->|"Scheduled Read"| SqlDb
     FuncApp -->|"Cache Cleanup"| Redis
@@ -316,11 +344,10 @@ erDiagram
         string Os "Operating system"
     }
 
-    AspNetUsers ||--o{ ExternalLogins : "links"
+    AspNetUsers ||--o{ ExternalLogins : "has"
     ExternalLogins {
-        string LoginProvider PK "GitHub/Google/etc"
+        string LoginProvider PK "GitHub"
         string ProviderKey PK "Provider user ID"
-        string ProviderDisplayName "Display name"
         string UserId FK "AspNetUsers.Id"
     }
 ```
@@ -459,9 +486,8 @@ stateDiagram-v2
 
 Generates QR codes for shortened links, bridging physical and digital worlds.
 
-**Provider Options:**
-- **QRServer API** (free, no API key): `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data={encodedUrl}`
-- **GoQR.me API** (free, no API key): `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data={encodedUrl}`
+**Provider:**
+- **QRServer API** (free, no API key required): `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data={encodedUrl}`
 
 **Implementation:**
 ```csharp
@@ -592,7 +618,7 @@ flowchart TB
 
 - .NET 10 SDK
 - An IDE (Visual Studio 2022 17.12+ or Visual Studio Code)
-- Docker Desktop (for SQL Server container in local dev)
+- SQL Server (Docker container, LocalDB, or SQL Server Express)
 - Azure account (for deployment)
 - GitHub OAuth App (for authentication)
 
