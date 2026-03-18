@@ -30,7 +30,7 @@ LinkVault is a full-stack web application that transforms long URLs into concise
 - [Authentication Strategy](#authentication-strategy)
 - [Load Balancing Strategy](#load-balancing-strategy)
 - [Rate Limiting Strategy](#rate-limiting-strategy)
-- [Caching Strategy](#caching-striting)
+- [Caching Strategy](#caching-strategy)
 - [Unique ID Generation](#unique-id-generation)
 - [Encoding Strategy](#encoding-strategy)
 - [Getting Started](#getting-started)
@@ -113,18 +113,23 @@ This project demonstrates mastery of these concepts while delivering a genuinely
 
 ```
 LinkVault/
-├── LinkVault.AppHost/              # .NET Aspire orchestration
-├── LinkVault.BlazorApp/            # Blazor Server frontend
-├── LinkVault.Api/                  # ASP.NET Core Minimal API backend
-├── LinkVault.Application/          # Business logic, services, DTOs
-├── LinkVault.Domain/               # Domain entities, enums, value objects
-├── LinkVault.Infrastructure/       # EF Core, Redis, external API clients
-├── LinkVault.Common/               # Shared utilities, constants
-├── LinkVault.Functions/            # Azure Functions (link expiration, analytics)
-├── LinkVault.Tests.Unit/           # Unit tests (xUnit + FluentAssertions)
-└── LinkVault.Tests.Integration/    # Integration tests (WebApplicationFactory)
+├── src/
+│   ├── aspire/
+│   │   ├── LinkVault.AppHost/        # .NET Aspire orchestration
+│   │   └── LinkVault.ServiceDefaults/ # Shared Aspire service defaults
+│   ├── LinkVault.BlazorApp/          # Blazor Server frontend
+│   ├── LinkVault.Api/                # ASP.NET Core Minimal API backend
+│   ├── LinkVault.Application/        # Business logic, services, DTOs
+│   ├── LinkVault.Domain/             # Domain entities, enums, value objects
+│   ├── LinkVault.Infrastructure/     # EF Core, Redis, external API clients
+│   └── LinkVault.Functions/          # Azure Functions (link expiration, analytics)
+└── tests/
+    ├── LinkVault.Tests.Unit/         # Unit tests (xUnit + FluentAssertions)
+    └── LinkVault.Tests.Integration/  # Integration tests (WebApplicationFactory)
 ```
 
+- **LinkVault.AppHost** -- The .NET Aspire orchestration project that orchestrates all services and resources during local development.
+- **LinkVault.ServiceDefaults** -- Shared Aspire service defaults for consistent configuration across all services (resilience, logging, health checks).
 - **LinkVault.BlazorApp** -- Web front-end built with Blazor Server. Handles UI, forms, and dashboard.
 - **LinkVault.Api** -- REST API built with Minimal APIs. Handles URL shortening, redirects, and analytics.
 - **LinkVault.Application** -- Business logic layer containing services, DTOs, and interfaces.
