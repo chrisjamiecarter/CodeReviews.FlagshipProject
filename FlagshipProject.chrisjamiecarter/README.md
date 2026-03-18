@@ -50,42 +50,14 @@ LinkVault transforms long, unwieldy URLs into short, memorable links with a suit
 
 URL shorteners are deceptively complex systems. Behind a simple redirect lies interesting engineering challenges:
 
-- **High-performance redirects** -- sub-millisecond response times at scale
+- **High-performance redirects** -- Sub-millisecond response times at scale
 - **Distributed caching** -- Redis-backed caching for instant lookups
-- **Unique ID generation** -- globally unique, sortable identifiers
-- **Base62 encoding** -- efficient URL-safe encoding of numeric IDs
-- **Load balancing** -- geographically distributed traffic routing
-- **Rate limiting** -- protecting the service from abuse
-- **Analytics** -- click tracking with detailed metrics
-- **QR codes** -- bridging physical and digital worlds
-
-This project demonstrates mastery of these concepts while delivering a genuinely useful tool.
-
-## Requirements
-
-This application fulfils the following [The C# Academy - Flagship Project](https://thecsharpacademy.com/project/139/flagship-project) requirements:
-
-- [x] README with overview, justification of choices, and instructions with a diagram file (initial PR requirement)
-- [x] Full-stack web app with front-end, back-end, and database (.NET/C# backend)
-- [ ] Authorization/authentication with at least one external provider
-- [ ] Interaction with an external API
-- [x] At least two Azure Functions (Link Expiration, Analytics Aggregation)
-- [ ] Thorough testing with proper error handling
-- [ ] Logging and monitoring
-- [ ] Deploy to Azure
-
-## Why This Project?
-
-URL shorteners are deceptively complex systems. Behind a simple redirect lies interesting engineering challenges:
-
-- **High-performance redirects** -- sub-millisecond response times at scale
-- **Distributed caching** -- Redis-backed caching for instant lookups
-- **Unique ID generation** -- globally unique, sortable identifiers
-- **Base62 encoding** -- efficient URL-safe encoding of numeric IDs
-- **Load balancing** -- geographically distributed traffic routing
-- **Rate limiting** -- protecting the service from abuse
-- **Analytics** -- click tracking with detailed metrics
-- **QR codes** -- bridging physical and digital worlds
+- **Unique ID generation** -- Globally unique, sortable identifiers
+- **Base62 encoding** -- Efficient URL-safe encoding of numeric IDs
+- **Load balancing** -- Geographically distributed traffic routing
+- **Rate limiting** -- Protecting the service from abuse
+- **Analytics** -- Click tracking with detailed metrics
+- **QR codes** -- Bridging physical and digital worlds
 
 This project demonstrates mastery of these concepts while delivering a genuinely useful tool.
 
@@ -115,23 +87,8 @@ This project demonstrates mastery of these concepts while delivering a genuinely
 ### User Management
 
 - **Authentication** -- Secure user registration and login
-- **External Providers** -- GitHub OAuth integration (with room for Google/Microsoft)
+- **External Providers** -- GitHub OAuth integration
 - **User Dashboard** -- Personal link management centre
-
-## Challenges
-
-This project addresses the following technical challenges:
-
-- [x] Load balancing with Azure Front Door and geographic routing
-- [x] Rate limiting with per-IP and per-user sliding window counters
-- [x] Unique ID generation using K-Sortable IDs (ULID) for globally unique, time-ordered identifiers
-- [x] Base62 encoding for URL-safe, compact link codes
-- [x] Redis caching strategy with cache-aside pattern and TTL management
-- [x] Two Azure Functions: link expiration and click analytics aggregation
-- [ ] External API integration (QR code generation, link preview/metadata)
-- [ ] Comprehensive unit and integration testing
-- [ ] Application Insights logging and monitoring
-- [ ] Azure deployment with proper environment configuration
 
 ## Technologies
 
@@ -143,7 +100,7 @@ This project addresses the following technical challenges:
 | **ORM** | Entity Framework Core | Mature, well-documented ORM with migrations support and Azure SQL integration. |
 | **Caching** | Redis (Azure Cache for Redis) | Sub-millisecond lookups for redirect performance. Cache-aside pattern with TTL management. |
 | **Load Balancer** | Azure Front Door | Global traffic distribution with geographic routing, SSL termination, and WAF integration. |
-| **Rate Limiting** | ASP.NET Core Rate Limiting (.NET 8+) | Built-in middleware with sliding window, fixed window, and concurrency limiters. |
+| **Rate Limiting** | ASP.NET Core Rate Limiting | Built-in middleware with sliding window, fixed window, and concurrency limiters. |
 | **Authentication** | ASP.NET Identity + GitHub OAuth | Industry-standard identity with external provider support. GitHub is natural for developer audience. |
 | **Functions** | Azure Functions (isolated worker) | Serverless compute for background tasks (expiration, analytics) with .NET 10 isolated model. |
 | **Monitoring** | Application Insights + Serilog | Full observability with traces, metrics, logs, and live metrics stream. |
@@ -163,19 +120,19 @@ LinkVault/
 ├── LinkVault.Domain/               # Domain entities, enums, value objects
 ├── LinkVault.Infrastructure/       # EF Core, Redis, external API clients
 ├── LinkVault.Common/               # Shared utilities, constants
-├── LinkVault.Functions/             # Azure Functions (link expiration, analytics)
+├── LinkVault.Functions/            # Azure Functions (link expiration, analytics)
 ├── LinkVault.Tests.Unit/           # Unit tests (xUnit + FluentAssertions)
 └── LinkVault.Tests.Integration/    # Integration tests (WebApplicationFactory)
 ```
 
-- **LinkVault.BlazorApp**: Web front-end built with Blazor Server. Handles UI, forms, and dashboard.
-- **LinkVault.Api**: REST API built with Minimal APIs. Handles URL shortening, redirects, and analytics.
-- **LinkVault.Application**: Business logic layer containing services, DTOs, and interfaces.
-- **LinkVault.Domain**: Domain entities (Link, ClickEvent, User), enums (LinkStatus), value objects.
-- **LinkVault.Infrastructure**: EF Core DbContext, repository implementations, Redis cache, external API clients.
-- **LinkVault.Functions**: Azure Functions for background processing (expiration, analytics aggregation).
-- **LinkVault.Tests.Unit**: Unit tests for services and business logic.
-- **LinkVault.Tests.Integration**: Integration tests for API endpoints and database interactions.
+- **LinkVault.BlazorApp** -- Web front-end built with Blazor Server. Handles UI, forms, and dashboard.
+- **LinkVault.Api** -- REST API built with Minimal APIs. Handles URL shortening, redirects, and analytics.
+- **LinkVault.Application** -- Business logic layer containing services, DTOs, and interfaces.
+- **LinkVault.Domain** -- Domain entities (Link, ClickEvent, User), enums (LinkStatus), value objects.
+- **LinkVault.Infrastructure** -- EF Core DbContext, repository implementations, Redis cache, external API clients.
+- **LinkVault.Functions** -- Azure Functions for background processing (expiration, analytics aggregation).
+- **LinkVault.Tests.Unit** -- Unit tests for services and business logic.
+- **LinkVault.Tests.Integration** -- Integration tests for API endpoints and database interactions.
 
 ### System Architecture
 
@@ -572,7 +529,6 @@ sequenceDiagram
 
 **Provider Configuration:**
 - GitHub OAuth App (Client ID + Secret)
-- Optional: Google OAuth, Microsoft Entra ID
 
 **Authorization Levels:**
 - **Anonymous**: Can create short links (rate limited)
@@ -692,26 +648,13 @@ flowchart TB
 
 6. Register a new account or log in with GitHub OAuth.
 
-## Future Enhancements
-
-- [ ] Blazor WebAssembly (Auto render mode) for offline capability
-- [ ] QR code customization (color, logo, size)
-- [ ] Bulk URL shortening with CSV import
-- [ ] Team/organization support with role-based access
-- [ ] Link expiration email notifications
-- [ ] Social media share cards with Open Graph
-- [ ] Password-protected links
-- [ ] UTM parameter auto-tagging
-- [ ] API key authentication for programmatic access
-- [ ] A/B testing for link destinations
-
 ## Version
 
 This document applies to LinkVault v0.1.0 (initial planning).
 
 ## Contributing
 
-Contributions are welcome! Please fork the repository and create a pull request with your changes. For major changes, please open an issue first to discuss what you would like to change.
+Contributions are not welcome at this time!
 
 ## License
 
@@ -720,7 +663,3 @@ This project is licensed under the MIT License. See the [LICENSE](./LICENSE) fil
 ## Contact
 
 For any questions or feedback, please open an issue.
-
----
-
-**_Happy Shortening!_**
