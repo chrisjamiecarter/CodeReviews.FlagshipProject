@@ -477,30 +477,6 @@ public async Task<byte[]> GenerateQrCodeAsync(string url)
 - Allow users to download QR code as PNG
 - Embed QR code in shareable cards
 
-### Link Preview / Metadata API
-
-Fetches Open Graph and Twitter Card metadata for URL preview before redirect.
-
-**Provider Options:**
-- **LinkPreview API** (free tier, API key): `https://api.linkpreview.net/?key={key}&q={url}`
-- **Microlink API** (free tier, API key): `https://api.microlink.io/?url={url}`
-- **Custom Implementation**: Build our own metadata extraction service with Azure Functions
-
-**Implementation (Custom Service):**
-```csharp
-public async Task<LinkMetadata> FetchMetadataAsync(string url)
-{
-    // Use AngleSharp or HtmlAgilityPack to parse HTML
-    // Extract: og:title, og:description, og:image, twitter:card
-    // Cache results in Redis for 24 hours
-}
-```
-
-**Usage:**
-- Display link preview cards in the dashboard
-- Show preview before creating a link
-- Generate social media share cards
-
 ## Authentication Strategy
 
 ### ASP.NET Identity with GitHub OAuth
